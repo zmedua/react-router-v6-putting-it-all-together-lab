@@ -1,12 +1,26 @@
 import { useState } from "react"
 
+import {
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom"
+
 function DirectorForm() {
   const [name, setName] = useState("")
   const [bio, setBio] = useState("")
 
+  const {
+    directors,
+    setDirectors,
+  } = useOutletContext();
+
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    const newDirector = { name, bio, movies: [] }
+
+    const newDirector = { name, bio, movies: [] };
+
     fetch("http://localhost:4000/directors", {
         method: "POST",
         headers: {
@@ -20,8 +34,10 @@ function DirectorForm() {
     })
     .then(data => {
         console.log(data)
+        setDirectors([...directors,data]);
         // handle context/state changes
         // navigate to newly created director page
+        navigate(`/directors/${data.id}`);
     })
     .catch(console.log)
   }
@@ -35,6 +51,7 @@ function DirectorForm() {
           placeholder="Director's Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          
           required
         />
         <textarea
